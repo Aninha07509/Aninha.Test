@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveElite | Sistema de Vendas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <nav class="bg-slate-900 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-tighter">DRIVE<span class="text-blue-500">ELITE</span></h1>
+            <div class="space-x-6">
+                <a href="#" class="hover:text-blue-400">Estoque</a>
+                <a href="#" class="hover:text-blue-400">Vendas</a>
+                <a href="#" class="hover:text-blue-400">Relatórios</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto mt-8 px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="bg-white p-6 rounded-xl shadow-md h-fit">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2">Registrar Nova Venda</h2>
+                <form id="vendaForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Modelo do Veículo</label>
+                        <input type="text" id="modelo" required class="w-full mt-1 p-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Ano</label>
+                            <input type="number" id="ano" placeholder="2024" class="w-full mt-1 p-2 border rounded-md outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Preço (R$)</label>
+                            <input type="number" id="preco" placeholder="0.00" class="w-full mt-1 p-2 border rounded-md outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nome do Cliente</label>
+                        <input type="text" id="cliente" class="w-full mt-1 p-2 border rounded-md outline-none">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition font-bold">
+                        CONCLUIR VENDA
+                    </button>
+                </form>
+            </div>
+
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold">Últimas Movimentações</h2>
+                    <span id="contador" class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">0 Veículos</span>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-gray-400 uppercase text-sm border-b">
+                                <th class="pb-3 px-2">Veículo</th>
+                                <th class="pb-3 px-2">Ano</th>
+                                <th class="pb-3 px-2">Cliente</th>
+                                <th class="pb-3 px-2">Valor</th>
+                                <th class="pb-3 px-2 text-right">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaVendas" class="divide-y">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('vendaForm');
+        const lista = document.getElementById('listaVendas');
+        const contador = document.getElementById('contador');
+        let vendas = [];
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const novaVenda = {
+                id: Date.now(),
+                modelo: document.getElementById('modelo').value,
+                ano: document.getElementById('ano').value,
+                preco: document.getElementById('preco').value,
+                cliente: document.getElementById('cliente').value
+            };
+
+            vendas.push(novaVenda);
+            atualizarTabela();
+            form.reset();
+        });
+
+        function atualizarTabela() {
+            lista.innerHTML = '';
+            vendas.forEach(venda => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition";
+                tr.innerHTML = `
+                    <td class="py-4 px-2 font-medium text-gray-900">${venda.modelo}</td>
+                    <td class="py-4 px-2 text-gray-600">${venda.ano}</td>
+                    <td class="py-4 px-2 text-gray-600">${venda.cliente}</td>
+                    <td class="py-4 px-2 font-bold text-green-600">R$ ${parseFloat(venda.preco).toLocaleString('pt-BR')}</td>
+                    <td class="py-4 px-2 text-right">
+                        <button onclick="removerVenda(${venda.id})" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                lista.appendChild(tr);
+            });
+            contador.innerText = `${vendas.length} Veículos`;
+        }
+
+        function removerVenda(id) {
+            vendas = vendas.filter(v => v.id !== id);
+            atualizarTabela();
+        }
+    </script>
+</body>
+</html>
